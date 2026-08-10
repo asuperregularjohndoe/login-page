@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Request, Response
 from flask.globals import request as flask_request
 
 def run_flask(app: Flask):
@@ -18,3 +18,15 @@ def run_flask(app: Flask):
             "isBase64Encoded": False,
         }
     return handler
+
+# For the on_request function
+def handle(request):
+    # Convert the Pages Functions request to Flask format
+    flask_req = Request(
+        method=request.method,
+        path=request.url,
+        headers={k: v[0] for k, v in request.headers.items()},
+        data=request.body,
+    )
+    response = app.full_dispatch_request(flask_req)
+    return Response(response.get_data(), status=response.status_code, headers=response.headers)
